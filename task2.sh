@@ -146,11 +146,7 @@ chmod +x /root/task2/avgs.sh
 #add the cron job
 crontab -l > cron_bkp
 echo "* * * * *  /root/task2/cpuUtilization.sh >> /var/www/html/cpu.html;/root/task2/memUsedAndAvailable.sh >> /var/www/html/mem.html;/root/task2/usedAndAvailable.sh >> /var/www/html/disk.html 2>&1 " >> cron_bkp
+echo "* * * * * /root/task2/avgs.sh > /var/www/html/avgs.html 2>&1 " >> cron_bkb
 crontab cron_bkp
 rm cron_bkp
 
-
-crontab -l > cron_bk
-echo "* * * * * /root/task2/avgs.sh > /var/www/html/avgs.html 2>&1 " >> cron_bk
-crontab cron_bk
-rm cron_bk
