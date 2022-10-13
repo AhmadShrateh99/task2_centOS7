@@ -64,7 +64,8 @@ diskA="`cat /var/www/html/disk.html |awk '"'"'{sum += $3} END {print sum}'"'"'`"
 
 numlin="`cat /var/www/html/disk.html |awk '"'"'END {print NR}'"'"'`"
 numOflinWithOutFirstTwo=$(($numlin - 3))
-
+if [ $numOflinWithOutFirstTwo -gt 2]
+then
 avgdU=$(($diskU /  $numOflinWithOutFirstTwo))
 avgdA=$(($diskA /  $numOflinWithOutFirstTwo))
 
@@ -121,6 +122,9 @@ echo -e "\n\n"
 #Time and Date
 echo "TIME:  `date +%H:%M:%S`"
 echo "DATE:  `date +%d-%m-%y`"
+else
+echo "you need to wait for a the second execution"
+fi
 ' > /root/task2/avgs.sh
 
 
