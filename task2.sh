@@ -13,7 +13,7 @@ chmod +x usedAndAvailable.sh memUsedAndAvailable.sh cpuUtilization.sh
 
 
 echo '#!/bin/bash
-echo -e "`df -m --output=source,used,avail |sed' "'1d'"' `\t\t`date +%H:%M:%S`                                                                                  `date +"%d-%m-%y"`"' > usedAndAvailable.sh
+echo -e "\n\n`df -m|grep /dev |grep -vE tmpfs|awk '{printf "%-30s\t%s\t\t\t%s\t\t\t%s\t\t%s\t\t%s  \n", $1,$2"M",$3"M",$4"M",$5,$6}' `\t\t`date +%H:%M:%S`     `date +"%d-%m-%y"`"' > usedAndAvailable.sh
 
 
 echo '#!/bin/bash
@@ -21,7 +21,9 @@ echo "`sar 1 1|grep -vE "Average" |awk'" '"'NR==4  {OFS="\t\t";  print $3,$4,$5,
 
 
 echo '#!/bin/bash
-echo -e "`free -m | awk '"'"'{print $1"\t\t",$3"\t\t",$4}'"'"' | sed '"'"'1d'"'"                                                                             ' `\t`date +%H:%M:%S`\t`date +"%d-%m-%y" `"' > memUsedAndAvailable.sh
+echo -e "\n `free -m | awk '{print $1"\t\t",$3"M\t\t",$4"M"}' | sed '1d' `\t\t`date +%H:%M:%S`\t`date +"%d-%m-%y" `' > memUsedAndAvailable.sh
+
+
 #enable http and add it to firewalld
 systemctl start httpd
 systemctl enable httpd
@@ -59,13 +61,12 @@ echo '#!/bin/bash
 
 echo "<pre>"
 #for disks
-diskU="`cat /var/www/html/disk.html |awk '"'"'{sum += $2} END {print sum}'"'"'`"
-diskA="`cat /var/www/html/disk.html |awk '"'"'{sum += $3} END {print sum}'"'"'`"
+diskU="`cat /var/www/html/disk.html |awk '{sum += $3} END {print sum}'`"
+diskA="`cat /var/www/html/disk.html |awk '{sum += $4} END {print sum}'`"
 
-numlin="`cat /var/www/html/disk.html |awk '"'"'END {print NR}'"'"'`"
+numlin="`cat /var/www/html/disk.html |awk 'NF'|wc -l` "
 numOflinWithOutFirstTwo=$(($numlin - 3))
-if [ $numOflinWithOutFirstTwo -gt 2]
-then
+
 avgdU=$(($diskU /  $numOflinWithOutFirstTwo))
 avgdA=$(($diskA /  $numOflinWithOutFirstTwo))
 
@@ -74,11 +75,11 @@ echo -e "Avarage Available Of disks:  $avgdA"M"\n "
 
 
 #for memory
-memU="`cat /var/www/html/mem.html |awk '"'"'{sum += $2} END {print sum}'"'"'`"
-memA="`cat /var/www/html/mem.html |awk '"'"'{sum += $3} END {print sum}'"'"'`"
+memU="`cat /var/www/html/mem.html |awk '{sum += $2} END {print sum}'`"
+memA="`cat /var/www/html/mem.html |awk '{sum += $3} END {print sum}'`"
 
-numlin="`cat /var/www/html/mem.html |awk '"'"'END {print NR}'"'"'`"
-numOflinWithOutFirstTwo=$(($numlin - 3))
+numlin="`cat /var/www/html/mem.html |awk 'NF'|wc -l` "
+numOflinWithOutFirstTwo=$(($numlin - 2))
 
 avgmU=$(($memU /  $numOflinWithOutFirstTwo))
 avgmA=$(($memA /  $numOflinWithOutFirstTwo))
@@ -88,22 +89,23 @@ echo -e "Avarage Available Of Memory:  $avgmA"M"\n "
 
 
 #for cpu
-cpuU="`cat /var/www/html/cpu.html |awk '"'"'{sum += $2} END {print sum}'"'"'`"
-cpuN="`cat /var/www/html/cpu.html |awk '"'"'{sum += $3} END {print sum}'"'"'`"
-cpuS="`cat /var/www/html/cpu.html |awk '"'"'{sum += $4} END {print sum}'"'"'`"
-cpuIO="`cat /var/www/html/cpu.html |awk '"'"'{sum += $5} END {print sum}'"'"'`"
-cpuST="`cat /var/www/html/cpu.html |awk '"'"'{sum += $6} END {print sum}'"'"'`"
-cpuID="`cat /var/www/html/cpu.html |awk '"'"'{sum += $7} END {print sum}'"'"'`"
+cpuU="`cat /var/www/html/cpu.html |awk '{sum += $2} END {print sum}'`"
+cpuN="`cat /var/www/html/cpu.html |awk '{sum += $3} END {print sum}'`"
+cpuS="`cat /var/www/html/cpu.html |awk '{sum += $4} END {print sum}'`"
+cpuIO="`cat /var/www/html/cpu.html |awk '{sum += $5} END {print sum}'`"
+cpuST="`cat /var/www/html/cpu.html |awk '{sum += $6} END {print sum}'`"
+cpuID="`cat /var/www/html/cpu.html |awk '{sum += $7} END {print sum}'`"
 
-numlin="`cat /var/www/html/cpu.html |awk '"'"'END {print NR}'"'"'`"
-numOflinWithOutFirstTwo=$(($numlin - 3))
+numlin="`cat /var/www/html/cpu.html |awk 'NF'|wc -l` "
+numOflinWithOutFirstTwo=$(($numlin - 2))
+
 
 #avgcU=$(($cpuU/$numOflinWithOutFirstTwo)|bc)
 #avgcN=$(($cpuN /  $numOflinWithOutFirstTwo))
 #avgcS=$(($cpuS /  $numOflinWithOutFirstTwo)) |bc
 #avgcIO=$(($cpuIO /  $numOflinWithOutFirstTwo))
 #avgcST=$(($cpuST /  $numOflinWithOutFirstTwo))
-avgcID="$cpuID /  $numOflinWithOutFirstTwo"
+#avgcID="$cpuID /  $numOflinWithOutFirstTwo"
 
 
 echo -n "Avarage cpu Of user: "
@@ -122,9 +124,6 @@ echo -e "\n\n"
 #Time and Date
 echo "TIME:  `date +%H:%M:%S`"
 echo "DATE:  `date +%d-%m-%y`"
-else
-echo "you need to wait for a the second execution"
-fi
 ' > /root/task2/avgs.sh
 
 
