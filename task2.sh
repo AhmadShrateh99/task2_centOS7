@@ -13,7 +13,7 @@ chmod +x usedAndAvailable.sh memUsedAndAvailable.sh cpuUtilization.sh
 
 
 echo '#!/bin/bash
-echo -e "\n\n`df -m|grep /dev |grep -vE tmpfs|awk'" '"'{printf "%-30s\t%s\t\t\t%s\t\t\t%s\t\t%s\t\t%s  \n", $1,$2"M",$3"M",$4"M",$5,$6}'"'"' `\t\t`date +%H:%M:%S`     `date +"%d-%m-%y"`"' > usedAndAvailable.sh
+echo -e "\n\n`df -m|grep /dev |awk'" '"'{printf "%-30s\t%s\t\t\t%s\t\t\t%s\t\t%s\t\t%s  \n", $1,$2"M",$3"M",$4"M",$5,$6}'"'"' `\t\t`date +%H:%M:%S`     `date +"%d-%m-%y"`"' > usedAndAvailable.sh
 
 
 echo '#!/bin/bash
